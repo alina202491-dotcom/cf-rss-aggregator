@@ -1,12 +1,12 @@
-import { GroupsConfig, GroupName, AggregatedResult, Env } from "./types";
+import { GroupsConfig, NormalizedGroupsConfig, GroupName, AggregatedResult, Env, FeedSource } from "./types";
 import { aggregateGroupItems } from "./aggregate";
 import { okJSON, errorJSON, notFound, methodNotAllowed, withCORS, handleOptions, getNumberFromEnv, computeResultEtag } from "./utils";
 
 const CONFIG_KEY = "config";
 
-export async function readGroupsConfig(kv: KVNamespace, envVars: Record<string, string>): Promise<GroupsConfig> {
-	const viaKv = await kv.get(CONFIG_KEY, { type: "json" }) as GroupsConfig | null;
-	if (viaKv && typeof viaKv === "object") return normalizeConfig(viaKv);
+export async function readGroupsConfig(kv: KVNamespace, envVars: Record<string, string>): Promise<NormalizedGroupsConfig> {
+	const viaKv = await kv.get(CONFIG_KEY, { type: "json" }) as GroupsConfig | NormalizedGroupsConfig | null;
+	if (viaKv && typeof viaKv === "object") return normalizeConfig(viaKv as any);
 	if (envVars.GROUPS_JSON) {
 		try {
 			const parsed = JSON.parse(envVars.GROUPS_JSON) as GroupsConfig;
@@ -18,21 +18,31 @@ export async function readGroupsConfig(kv: KVNamespace, envVars: Record<string, 
 	return {};
 }
 
-export async function writeGroupsConfig(kv: KVNamespace, config: GroupsConfig): Promise<void> {
-	await kv.put(CONFIG_KEY, JSON.stringify(normalizeConfig(config)));
+export async function writeGroupsConfig(kv: KVNamespace, config: GroupsConfig | NormalizedGroupsConfig): Promise<void> {
+	await kv.put(CONFIG_KEY, JSON.stringify(normalizeConfig(config as any)));
 }
 
-export function listGroups(config: GroupsConfig): GroupName[] {
+export function listGroups(config: NormalizedGroupsConfig): GroupName[] {
 	return Object.keys(config);
 }
 
-function normalizeConfig(config: GroupsConfig): GroupsConfig {
-	const out: GroupsConfig = {};
-	for (const [group, urls] of Object.entries(config)) {
-		if (!urls || !Array.isArray(urls)) continue;
-		const cleaned = urls
-			.map(u => (typeof u === "string" ? u.trim() : ""))
-			.filter(Boolean);
+function normalizeConfig(config: GroupsConfig | NormalizedGroupsConfig): NormalizedGroupsConfig {
+	const out: NormalizedGroupsConfig = {};
+	for (const [group, sources] of Object.entries(config)) {
+		if (!sources || !Array.isArray(sources)) continue;
+		const cleaned: FeedSource[] = [];
+		for (const entry of sources as Array<string | FeedSource>) {
+			if (typeof entry === "string") {
+				const url = entry.trim();
+				if (url) cleaned.push({ url });
+				continue;
+			}
+			if (entry && typeof entry === "object") {
+				const url = typeof entry.url === "string" ? entry.url.trim() : "";
+				const author = typeof (entry as any).author === "string" ? (entry as any).author.trim() : undefined;
+				if (url) cleaned.push(author ? { url, author } : { url });
+			}
+		}
 		if (cleaned.length > 0) out[group] = cleaned;
 	}
 	return out;
