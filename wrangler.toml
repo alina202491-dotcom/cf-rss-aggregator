@@ -5,11 +5,6 @@ compatibility_date = "2024-10-01"
 [triggers]
 crons = [ "*/30 * * * *" ]
 
-[[kv_namespaces]]
-binding = "FEEDS_KV"
-id = "00000000000000000000000000000000"
-preview_id = "11111111111111111111111111111111"
-
 [vars]
 ADMIN_TOKEN = "change-me"
 CORS_ALLOW_ORIGIN = "*"
