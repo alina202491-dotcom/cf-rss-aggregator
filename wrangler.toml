@@ -1,0 +1,26 @@
+name = "cf-rss-aggregator"
+main = "src/index.ts"
+compatibility_date = "2024-10-01"
+
+[triggers]
+crons = [ "*/30 * * * *" ]
+
+[[kv_namespaces]]
+binding = "FEEDS_KV"
+id = "00000000000000000000000000000000"
+preview_id = "11111111111111111111111111111111"
+
+[vars]
+ADMIN_TOKEN = "change-me"
+CORS_ALLOW_ORIGIN = "*"
+CACHE_TTL_SECONDS = "900"
+FETCH_TIMEOUT_MS = "8000"
+CONCURRENCY = "6"
+USER_AGENT = "cf-rss-aggregator/0.1"
+GROUPS_JSON = """{
+  \"friends\": [
+    \"https://example.com/feed.xml\",
+    \"https://example.org/rss\"
+  ]
+}"""
+CONFIG_URL = ""
