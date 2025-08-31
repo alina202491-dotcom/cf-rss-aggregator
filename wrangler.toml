@@ -20,7 +20,14 @@ USER_AGENT = "cf-rss-aggregator/0.1"
 GROUPS_JSON = """{
   \"friends\": [
     { \"url\": \"https://blog.liushen.fun/atom.xml\", \"author\": \"清羽飞扬\" },
-    { \"url\": \"https://www.2x.nz/rss.xml\", \"author\": \"2X\" }
+    { \"url\": \"https://www.vvhan.com/rss.xml\", \"author\": \"韩小韩博客\" },
+    { \"url\": \"https://blog.helong.online/atom.xml\", \"author\": \"硅基漫游指南\" },
+    { \"url\": \"https://cleves.me/rss.xml\", \"author\": \"cleves\" },
+    { \"url\": \"https://blog.huan666.de/index.xml\", \"author\": \"焕昭君\" },
+    { \"url\": \"https://blog.imsyy.top/rss.xml\", \"author\": \"無名小栈\" },
+    { \"url\": \"https://www.linexic.top/rss.xml\", \"author\": \"LineXic书屋\" },
+    { \"url\": \"https://blog.cmliussss.com/atom.xml\", \"author\": \"CM喂饭\" },
+    { \"url\": \"https://www.2x.nz/rss.xml\", \"author\": \"二叉树树\" }
   ]
 }"""
 CONFIG_URL = ""
