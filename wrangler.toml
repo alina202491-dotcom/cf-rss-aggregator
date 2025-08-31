@@ -3,7 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2024-10-01"
 
 [triggers]
-crons = [ "*/30 * * * *" ]
+crons = [ "*/5 * * * *" ]
 
 [[kv_namespaces]]
 binding = "FEEDS_KV"
