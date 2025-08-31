@@ -1,4 +1,4 @@
-import { FeedItem, AggregatedResult, GroupsConfig, GroupName, Env } from "./types";
+import { FeedItem, AggregatedResult, NormalizedGroupsConfig, GroupName, Env } from "./types";
 import { fetchWithTimeout } from "./utils";
 import { parseFeedXml } from "./parser";
 
@@ -43,8 +43,8 @@ async function fetchOneFeed(url: string, options: AggregateOptions): Promise<Fee
 	}
 }
 
-export async function aggregateGroupItems(config: GroupsConfig, group: GroupName, env: Env, limit: number): Promise<AggregatedResult> {
-	const urls = config[group] ?? [];
+export async function aggregateGroupItems(config: NormalizedGroupsConfig, group: GroupName, env: Env, limit: number): Promise<AggregatedResult> {
+	const sources = config[group] ?? [];
 	const options: AggregateOptions = {
 		limit,
 		userAgent: env.USER_AGENT || "cf-rss-aggregator/0.1",
@@ -52,14 +52,19 @@ export async function aggregateGroupItems(config: GroupsConfig, group: GroupName
 		concurrency: Number.parseInt(env.CONCURRENCY || "6", 10),
 	};
 	const allItems: FeedItem[] = [];
-	const worker = (u: string) => fetchOneFeed(u, options).then(items => {
+	const worker = (source: { url: string; author?: string }) => fetchOneFeed(source.url, options).then(items => {
+		if (source.author) {
+			for (const it of items) {
+				if (!it.author || it.author === "") it.author = source.author as string;
+			}
+		}
 		allItems.push(...items);
 		return items.length;
 	});
 	// Simple concurrency limiter
 	const pool: Promise<number>[] = [];
-	for (const url of urls) {
-		pool.push(worker(url));
+	for (const src of sources) {
+		pool.push(worker(src));
 		if (pool.length >= options.concurrency) {
 			await Promise.race(pool);
 			// prune settled

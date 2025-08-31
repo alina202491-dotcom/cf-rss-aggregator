@@ -12,8 +12,21 @@ export interface Env {
 
 export type GroupName = string;
 
+// Input config as provided by users (backward compatible):
+// - Either a list of URL strings
+// - Or a list of objects with url and optional author override
+export interface FeedSource {
+	url: string;
+	author?: string;
+}
+
 export interface GroupsConfig {
-	[groupName: GroupName]: string[];
+	[groupName: GroupName]: Array<string | FeedSource>;
+}
+
+// Normalized config used internally
+export interface NormalizedGroupsConfig {
+	[groupName: GroupName]: FeedSource[];
 }
 
 export interface FeedItem {

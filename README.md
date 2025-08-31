@@ -35,19 +35,23 @@ npm run deploy
 - 远程配置：设置 `CONFIG_URL`，从远程拉取 JSON 配置并写入 KV。
 - 管理端：`PUT /admin/config?token=...` 直接提交 JSON 写入 KV。
 
-配置 JSON 结构示例：
+配置 JSON 结构示例（两种写法等价，可混用）：
 
 ```json
 {
   "friends": [
     "https://example.com/feed.xml",
-    "https://example.org/rss"
+    { "url": "https://example.org/rss", "author": "Example Author" }
   ],
   "tech": [
     "https://example.net/atom.xml"
   ]
 }
 ```
+
+说明：
+- 简写字符串形式表示仅提供 URL。
+- 对象形式可提供 `url` 与可选的 `author`，当某条目解析缺少作者时，会回退使用该 `author`。
 
 ## API 说明
 
