@@ -19,8 +19,8 @@ CONCURRENCY = "6"
 USER_AGENT = "cf-rss-aggregator/0.1"
 GROUPS_JSON = """{
   \"friends\": [
-    \"https://example.com/feed.xml\",
-    \"https://example.org/rss\"
+    \"https://blog.liushen.fun/atom.xml\",
+    \"https://www.2x.nz/rss.xml\"
   ]
 }"""
 CONFIG_URL = ""
